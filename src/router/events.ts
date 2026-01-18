@@ -2,7 +2,11 @@ import { Hono } from "hono";
 import { prisma } from '../utils/prisma.js'
 
 export const eventsRoute = new Hono().get("/", async (c) => {
-  const events = await prisma.event.findMany()
+  const events = await prisma.event.findMany({
+    include: {
+      participants: true
+    }
+  })
   return c.json({ events })
 })
   .get("/:id", async (c) => {
@@ -10,6 +14,9 @@ export const eventsRoute = new Hono().get("/", async (c) => {
     const event = await prisma.event.findFirst({
       where: {
         id: id
+      },
+      include: {
+        participants: true
       }
     })
     return c.json({ event })
